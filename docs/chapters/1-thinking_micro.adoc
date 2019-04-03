@@ -1,0 +1,367 @@
+== Micro Thinking: from Monolith to Microservices
+
+
+In the late 20th century and early 21st century developing monolithic applications were popular.
+However, monolithic applications drawbacks hindered developers with maintaining and scaling application components.
+Monolithic applications by nature tend to be highly coupled and grow in complicity as the application evolves.
+
+According to wikipedia, Monolith definition goes as the following::
+In software engineering, a monolithic application describes a single-tiered software application in which the user
+interface and data access code are combined into a single program from a single platform.
+A monolithic application is self-contained, and independent from other computing applications.
+
+////
+TODO:
+Monolith architecture image
+////
+
+The concept of microservices appeared at the Web Services Edge conference in 2005
+by Dr. Peter Rodgers which stated that, "Software components are Micro-Web-Services".
+
+According to wikipedia, Microservices definition goes as the following::
+Microservices are a software development technique—a variant of the service-oriented architecture (SOA) architectural
+style that structures an application as a collection of loosely coupled services. In a microservices architecture,
+services are fine-grained and the protocols are lightweight. The benefit of decomposing an application into different
+smaller services is that it improves modularity.
+
+Over the years microservices concept and tools evolved to meet requirements of large scaled applications.
+
+
+////
+TODO:
+Microservices architecture image
+////
+
+
+=== Get Coding!
+
+Its time write some code with Helidon libraries. First we will take a look at simple greeting service and then improve
+the service.
+
+The following dependency in the build.gradle must be declared.
+
+[source, groovy]
+----
+    implementation 'io.helidon.webserver:helidon-webserver:1.0.0'
+----
+
+
+Now open the `chapter1/src/main/java/com/cemnura/lab/Code1.java`:
+
+[source,java]
+----
+include::../../chapter1/src/main/java/com/cemnura/lab/Code1.java[]
+----
+
+<1> Required imports from Helidon library.
+<2> Routing configuration with builder pattern.
+<3> Specify the response to return a message.
+<4> Build the Routing class.
+<5> Start the server.
+
+
+
+Run the code to start the server on localhost. This will start a *Netty* server exposing a random port.
+The exposed port information will be written in the console when the server starts.
+
+WARNING: In future examples we will configure the server to expose a designated port.
+
+Run the following command in your terminal to get a 'Greetings' from the webserver.
+
+[source, bash]
+----
+curl http://localhost:[port]/greet
+----
+
+In this example we returned a simple 'Greetings!!!' message from the endpoint of
+'/greet'.
+
+Run this example and you should see::
+[source, text]
+----
+Greetings!!!
+----
+
+
+=== Just Greetings?
+
+Let move a step forward and try to make a specialized greetings messsage.
+
+Parameters can be retrieved from url path like the following:
+
+----
+req.path().param("{param}")
+----
+
+Now open the `chapter1/src/main/java/com/cemnura/lab/Code2.java`:
+[source,java]
+----
+include::../../chapter1/src/main/java/com/cemnura/lab/Code2.java[]
+----
+
+Fill in the designated code block to retrieve the name
+from the requested path such as `*/greet/Kenobi*`and
+return a greeting message.
+
+
+Check `src/main/java/com/cemnura/lab/chapter1/Code2_Solution.java`
+for the solution of example.
+
+[.assignment]
+[source, java]
+----
+include::../../chapter1/src/main/java/com/cemnura/lab/Code2_Solution.java[]
+----
+
+<1> {`name`} indicates named path parameter.
+<2> get the `name` from the path.
+<3> send greetings message.
+
+[source, bash]
+curl http://localhost:[port]/greet/Kenobi
+
+Should give an output of: `Greetings, Kenobi !!!`
+
+
+=== Just Text?
+
+Helidon libraries also support::
+- JAX-RS
+- JSON-P
+- JSON-B
+- Jackson
+
+Follow dependency decleration in `build.gradle` enables helidon to retrieve/return JSONP data
+[source, groovy]
+implementation 'io.helidon.media.jsonp:helidon-media-jsonp-server:1.0.0'
+
+Now open the `src/main/java/com/cemnura/lab/chapter1/Code3.java`:
+[source, java]
+----
+include::../../chapter1/src/main/java/com/cemnura/lab/Code3.java[]
+----
+
+<1> Add JSON support to routing class
+<2> Create JSON object to be sent
+<3> Send JSON data
+
+[source, bash]
+curl http://localhost:[port]/greet/Hulk
+
+=== More Routing
+
+HTTP `*GET*` operations is the most common used HTTP method
+used to retrieve data from a server.
+
+HTTP `*POST*` operations are used to send data to a server to update/create
+a resource.
+
+Here is a table for all HTTP routing methods that can be used in Helidon::
+
+[cols="1,5,1"]
+|===
+|HTTP Method|Routing.Builder example|Example
+
+|*GET*|`+.get((req, res) -> { /* handler */ })+`|  getInfo
+|*PUT*| `+.put((req, res) -> { /* handler */ })+`| setConfig
+|*POST*| `+.post((req, res) -> { /* handler */ })+`| registerUser
+|*HEAD*| `+.head((req, res) -> { /* handler */ })+`| getMetadata
+|*DELETE*| `+.delete((req, res) -> { /* handler */ })+`| deleteUser
+|*TRACE*| `+.trace((req, res) -> { /* handler */ })+`| traceOperation
+|*OPTIONS*| `+.options((req, res) -> { /* handler */ })+`| getRequirements
+|_any method_|`+.any((req, res) -> { /* handler */ })+`| doForAll
+|_multiple methods_|`+.anyOf(List.of(Http.Method.GET, Http.Method.POST), (req, res) -> { /* handler */ })+`| doForThese
+|===
+
+Helidon library provides a .any() method that will handle any HTTP request to the server.
+
+Routing can be set to first log information about any http request and then forwarded to the next HTTP routing.
+
+Now Open
+
+Now open the `chapter1/src/main/java/com/cemnura/lab/Code4.java`:
+[source, java]
+----
+include::../../chapter1/src/main/java/com/cemnura/lab/Code4.java[]
+----
+
+<1> Log information.
+<2> Set response status
+<3> send response with set response status
+
+[source, bash]
+----
+curl -X GET -i http://localhost:[port]/
+curl -X POST -i http://localhost:[port]/anything
+----
+
+In this example we are using .any() method to retrieve all HTTP requests.
+Notice that both HTTP `*GET*` and `*POST*` request are logged in the console. In line <2>
+we are setting the HTTP response header. Which can be seen in the `*curl*` requests stated
+above.
+
+=== Request Handling
+
+Say that you are required to have two different HTTP methods but
+have to make initial handlers for all http request. This routing can be done by `*ServerRequest*` objects
+`*next()*` method.
+
+Now open the `chapter1/src/main/java/com/cemnura/lab/Code5.java`:
+[source, java]
+----
+include::../../chapter1/src/main/java/com/cemnura/lab/Code5.java[]
+----
+
+In this example we are routing every HTTP request to the initial handler of `*any*` and logging the desired information.
+After the desired initial operation is complete we then route the HTTP request with `*req.next()*`.
+The HTTP request is routed depending on the request to either `*foo*` handler or `*bar*` handler.
+
+
+[source, bash]
+----
+curl -X GET http://localhost:[port]/foo
+curl -X GET http://localhost:[port]/bar
+----
+
+*However, this server has a problem!!!*
+
+Try HTTP `*GET*` on a different path
+[source, bash]
+----
+curl -X GET http://localhost:[port]/zar
+----
+
+This returns nothing from the server.
+
+Now open the `chapter1/src/main/java/com/cemnura/lab/Code6.java` and fill in the designated code block
+to fix this problem.
+
+TIP: Routing starts from start to bottom we have to route `*any*` other request to a handler.
+
+Perform the previous `*curl*` operation to test the code.
+
+////
+TODO: Try to make a hidden block instead.
+////
+Check `chapter1/src/main/java/com/cemnura/lab/Code6_Solution.java` for the solution.
+
+Perfect!! We now route `*any*` other request to a handler this way we always return a response for a request.
+
+
+=== To Handle Or Not to Handle?
+
+*That is the question* that all programmers must forfill.
+Error handling is a must for a server, think of the possibilities.
+
+Error handling can be set during the Routing class build phase. Such as
+
+[source, java]
+----
+.error(MyException.class, (req, res, ex) -> {
+
+                                res.send("I'll be back!");
+
+                          }
+       )
+----
+
+This way we can specify what operation must be carried out upon a designated _Exception_
+is retrieved in a handler.
+
+Now open the `chapter1/src/main/java/com/cemnura/lab/Code7.java`:
+[source, java]
+----
+include::../../chapter1/src/main/java/com/cemnura/lab/Code7.java[]
+----
+
+
+This way we can handle a specific error thrown at any point.
+
+[source, bash]
+----
+curl -i -X GET  http://localhost:[port]/foo
+
+    HTTP/1.1 404 Not Found
+    Content-Type: text/plain;charset=UTF-8
+    Date: Wed, 3 Apr 2019 16:07:24 +0300
+    transfer-encoding: chunked
+    connection: keep-alive
+
+
+    There is no spoon!
+
+
+curl -i -X GET  http://localhost:[port]/bar
+
+    HTTP/1.1 400 Bad Request
+    Content-Type: text/plain;charset=UTF-8
+    Date: Wed, 3 Apr 2019 16:08:00 +0300
+    transfer-encoding: chunked
+    connection: keep-alive
+
+    Wrong argument!
+
+----
+
+
+However, what will happen if any other `*Exception*` either then
+com.cemnura.helper.SpoonException, IllegalArgumentException occurred?
+Helidon has our back!
+Every unhandled error will return a default error with HTTP *500* ERROR that way
+we will not reveal any server errors to the client.
+
+----
+
+curl -i -X GET http://localhost:[port]/zar
+
+    HTTP/1.1 500 Internal Server Error
+    Date: Wed, 3 Apr 2019 23:20:48 +0300
+    transfer-encoding: chunked
+    con
+    nection: keep-alive
+
+----
+
+
+=== Static Content
+
+Helidon supports return static content such as files, images. In order to enable
+netty server to return static content use `*StaticContentSupport*` class must be used.
+
+
+Now open the `chapter1/src/main/java/com/cemnura/lab/Code8.java`:
+[source, java]
+----
+include::../../chapter1/src/main/java/com/cemnura/lab/Code8.java[]
+----
+
+<1> register `*"/images"*` path to provide static content using `*StaticContentSupport.create()*`
+<2> register `*"/images"*` path to provide static content using `*StaticContentSupport.builder()*`
+<3> set welcome page to return `*index.html*` file
+<4> set filename extensions that URL path will return.
+
+
+=== Just do it!
+
+Lets try to combine routing.
+
+Now open the `chapter1/src/main/java/com/cemnura/lab/chapter1/Code9.java`:
+[source, java]
+----
+include::../../chapter1/src/main/java/com/cemnura/lab/Code9.java[]
+----
+
+Notice How the code block where routing is empty. Its time to test our understanding.
+
+.Please implement the following routing methods:
+. .any((req, res) -> { /* handler */ })
+. .any("/path", (req, res) -> { /* handler */ })
+. .get("/path", (req, res) -> { /* handler */ })
+. .get("/path1/{name}",(req, res) -> { /* handler */ })
+. .get("/path2", (req, res) -> { /* handler */ req.next(); })
+. .post("/path", (req, res) -> { /* handler */ })
+. .post("/path", (req, res) -> { /* handler return JSON data */ })
+. .register("/path", StaticContentSupport.create("/static"))
+. .error(Exception.class, (req, res, ex) -> { /* handler */})
+
+

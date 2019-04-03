@@ -1,0 +1,129 @@
+== Introduction
+
+In this lab, we are going to experiment creating microservices with *Helidon*.
+
+Helidon developed by *Oracle* is open source and available under _Apache 2.0_ licence.
+
+Helidon Repository::
+https://github.com/oracle/helidon
+
+Helidons symbol is inspired by a _swallow_ which is a swift songbird.
+Helidon was designed to be simple and fast.
+Helidon is just a collection of libraries running on *_Netty_* core.
+
+
+////
+TODO
+Therefore, the developed microservice does not require any runtime environment such as tomcat, jboss
+////
+
+=== Microservices
+
+////
+TODO
+
+A good description of microservices
+
+Microservices are composed of small applications.
+////
+
+
+=== Helidon Features
+
+* Simple and Fast
+* MicroProfile Supports
+* Reactive WebServer
+* Obserable and Resilient
+
+
+=== Cloud-native Tools
+
+Helidon libraries support many popular technologies accepted by *Cloud Native Computing Foundation*
+
+* Docker
+* Kubernetes
+* Prometheus
+* OpenTracing
+* Etcd
+
+
+=== Helidon Programming Models
+
+Helidon supports two programming modules.
+
+.Helidon SE : MicroFramework
+
+[source, java]
+----
+WebServer.create(
+  Routing.builder()
+    .get("/greet", (req, res)
+       -> res.send("Hello World!"))
+    .build())
+  .start();
+----
+
+.Helidon  MP : MicroProfile
+
+[source, java]
+----
+public class GreetService {
+  @GET
+  @Path("/greet")
+  public String getMsg() {
+    return "Hello World!";
+  }
+}
+----
+
+
+=== Prerequisites
+
+==== Java Development Kit
+
+We will need JDK 1.8+ installed on our machine.
+
+* http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Oracle JDK 8]
+
+==== IDE
+
+Preferred IDE
+
+* Eclipse
+* IntelliJ IDEA
+* Netbeans
+* Atom
+
+==== Docker
+
+Docker Desktop CE
+
+Install Manuals
+
+Ubuntu::
+https://docs.docker.com/install/linux/docker-ce/ubuntu/[Docker CE for Linux]
+Mac OS::
+https://docs.docker.com/docker-for-mac/install/[Install Docker Desktop for Mac]
+Windows::
+https://docs.docker.com/docker-for-windows/install/[Install Docker Desktop for Windows]
+
+
+
+
+==== Kubernetes
+
+
+=== Let’s start !
+[source, bash]
+----
+git clone https://github.com/cemnura/helidon-lab
+----
+
+You can import the lab repository to desired IDE as a gradle project.
+
+=== How to run the different exercises
+
+////
+TODO
+Show how to run exercises
+////

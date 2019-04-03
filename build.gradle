@@ -1,0 +1,32 @@
+plugins {
+    id 'org.asciidoctor.jvm.convert' version '2.0.0-rc.1'
+
+}
+
+
+group 'com.cemnura'
+version '1.0-SNAPSHOT'
+
+
+repositories {
+    mavenCentral()
+}
+
+
+asciidoctor {
+
+    group = "documentation"
+
+    sourceDir = file('docs')
+    outputDir = file('build/docs')
+
+    attributes  'source-highlighter': 'coderay',
+                'endpoint-url': 'http://example.org',
+                'imagesdir': 'images',
+                'toc': 'left',
+                'icons': 'font',
+                'setanchors': '',
+                'idprefix': '',
+                'idseparator': '-',
+                'docinfo1': ''
+}
