@@ -1,0 +1,122 @@
+== Server Configuration
+
+There are many options that can chosen to configure. Helidon offers YAML, HOCON, JSON,
+java properties as well as coding the server configurations.
+
+The easiest yet most inconvenient method being coding server configuration. This can be
+justifiable when you are testing out the library. However, since each time a server configuration
+is need the code must be re-compiled.
+
+Here is an example of configuration server with code::
+[source, java]
+----
+include::../../chapter2/src/main/java/com/cemnura/lab/Code1.java[]
+----
+
+<1> Create builder for `*ServerConfiguration*`
+<2> Set server to expose `8080`
+<3> Build the `*ServerConfiguration*`
+
+=== Configuration Wizard
+
+Helidon provides artifacts for supported configuration options.
+
+* helidon-config-yaml
+* helidon-config-hocon
+* helidon-config-etcd
+* helidon-config-git
+
+You can choose to config your web server with a file or
+a more dynamic git config that will allow version control of your config file
+////
+TODO: LEARN MORE ABOUT ETCD
+////
+or Etcd.
+
+==== YAML configuration
+
+Following dependency must be declared in `*build.gradle*`
+file to add YAML configuration support.
+
+[source, groovy]
+----
+implementation 'io.helidon.config:helidon-config-yaml:1.0.2'
+----
+
+Here is an example `*YAML*` configuration
+
+[source, yaml]
+----
+include::../../chapter2/src/main/resources/application.yaml[]
+----
+
+Which can be used to configure the web server as the following
+
+[source, java]
+----
+include::../../chapter2/src/main/java/com/cemnura/lab/Code2.java[]
+----
+
+<1> Load `*application.yaml*` file from classpath
+<2> Get `*webserver*`object
+
+Helidon will automatically get configurable values.
+
+////
+TODO: What are the configurable values??
+////
+
+==== JSON, HOCON
+
+Following dependency must be declared in `*build.gradle*`
+file to add JSON, HOCON configuration support.
+
+[source, groovy]
+----
+implementation 'io.helidon.config:helidon-config-hocon:1.0.2'
+----
+
+[source, json]
+----
+include::../../chapter2/src/main/resources/application.json[]
+----
+
+Which can be used to configure the web server as the following
+
+[source, java]
+----
+include::../../chapter2/src/main/java/com/cemnura/lab/Code3.java[]
+----
+
+<1> Load `*application.json*` file from classpath
+<2> Get `*webserver*`object
+
+Helidon will automatically get configurable values as in YAML configuration.
+
+
+==== GIT Config
+
+Version controlling the web server config can be a good idea. This will
+enable you to change the server configuration with just simple commit push to a remote repository.
+
+[source, groovy]
+----
+implementation 'io.helidon.config:helidon-config-git:1.0.2'
+----
+
+[source, json]
+----
+include::../../chapter2/src/main/resources/application.json[]
+----
+
+Which can be used to configure the web server as the following
+
+[source, java]
+----
+include::../../chapter2/src/main/java/com/cemnura/lab/Code3.java[]
+----
+
+<1> Load `*application.json*` file from classpath
+<2> Get `*webserver*`object
+
+Helidon will automatically get configurable values as in YAML configuration.

@@ -1,0 +1,6 @@
+{
+  "webserver": {
+    "port": 9090,
+    "bindingAddress": "localhost"
+  }
+}

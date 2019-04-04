@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+group 'com.cemnura'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    implementation 'io.helidon.webserver:helidon-webserver:1.0.2'
+
+    // YAML Configuration Support
+    implementation 'io.helidon.config:helidon-config-yaml:1.0.2'
+
+    // JSON, HOCON Configuration Support
+    implementation 'io.helidon.config:helidon-config-hocon:1.0.2'
+
+    // Git Version Control Configuration Support
+    implementation 'io.helidon.config:helidon-config-git:1.0.2'
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
+}

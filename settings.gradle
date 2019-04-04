@@ -1,3 +1,4 @@
 rootProject.name = 'HelidonLab'
 include 'chapter1'
+include 'chapter2'
 
