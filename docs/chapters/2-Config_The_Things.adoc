@@ -127,3 +127,19 @@ include::../../chapter2/src/main/java/com/cemnura/lab/Code4.java[]
 
 Helidon will automatically get configurable values as in JSON configuration.
 
+=== Polling
+
+In production we might want to change the configuration. In the previous examples
+when the configuration is changed we must restart the server. This is not suitable
+at production. Helidon libraries enables us to configure a `*PollingStrategies*` that
+provides the server to check for configuration changes.
+
+
+[source, java]
+----
+include::../../chapter2/src/main/java/com/cemnura/lab/Code5.java[]
+----
+<1> Determine the configuration file
+<2> Create PollingStratagies of 2 seconds
+<3> Define the operation when the configuration file is changed
+
