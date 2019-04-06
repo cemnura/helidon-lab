@@ -117,13 +117,13 @@ Configuration can be used as the following example.
 
 [source, java]
 ----
-include::../../chapter2/src/main/java/com/cemnura/lab/Code3.java[]
+include::../../chapter2/src/main/java/com/cemnura/lab/Code4.java[]
 ----
 
-<1> Load `*application.json*` file from classpath
-<2> Get `*webserver*`object
+<1> Designate `*application.json*` file from project
+<2> Specify the remote git repository
+<3> Specify the branch at remote repository
+<4> Get `*webserver*` object
 
 Helidon will automatically get configurable values as in JSON configuration.
-
-
 

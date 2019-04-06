@@ -25,10 +25,10 @@ public class Code4 {
         Config config =
                 Config.create(
                     GitConfigSourceBuilder
-                            .create("/chapter2/src/main/resources/application.yaml")
-                            .uri(URI.create("https://github.com/cemnura/helidon-lab.git"))
-                            .branch("chapter2"))
-                .get("webserver");
+                            .create("/chapter2/src/main/resources/application.yaml")    // <1>
+                            .uri(URI.create("https://github.com/cemnura/helidon-lab.git"))  // <2>
+                            .branch("chapter2"))    // <3>
+                .get("webserver");  // <4>
 
 
 
