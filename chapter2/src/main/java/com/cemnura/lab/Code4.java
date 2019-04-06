@@ -1,5 +1,6 @@
 package com.cemnura.lab;
 
+import io.helidon.common.http.HttpRequest;
 import io.helidon.config.Config;
 import io.helidon.config.git.GitConfigSourceBuilder;
 import io.helidon.webserver.Routing;
@@ -9,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Consumer;
 
@@ -20,12 +22,15 @@ public class Code4 {
 
     public static void main(String[] args) {
 
-        Config config = Config.create(
-                GitConfigSourceBuilder
-                        .create("application.conf")
-                        .uri(URI.create("https://github.com/cemnura/helidon-lab.git"))
-                        .directory(Paths.get("/chapter2/src/main/resources/application.yaml"))
-                        .branch("config"));
+        Config config =
+                Config.create(
+                    GitConfigSourceBuilder
+                            .create("/chapter2/src/main/resources/application.yaml")
+                            .uri(URI.create("https://github.com/cemnura/helidon-lab.git"))
+                            .branch("chapter2"))
+                .get("webserver");
+
+
 
         WebServer webServer =
                 WebServer.create(ServerConfiguration.create(config),

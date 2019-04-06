@@ -76,6 +76,7 @@ file to add JSON, HOCON configuration support.
 implementation 'io.helidon.config:helidon-config-hocon:1.0.2'
 ----
 
+We will use the following `*application.json*` file in this example.
 [source, json]
 ----
 include::../../chapter2/src/main/resources/application.json[]
@@ -89,27 +90,30 @@ include::../../chapter2/src/main/java/com/cemnura/lab/Code3.java[]
 ----
 
 <1> Load `*application.json*` file from classpath
-<2> Get `*webserver*`object
+<2> Get `*webserver*` object
 
-Helidon will automatically get configurable values as in YAML configuration.
+Helidon will automatically get configurable values as in JSON configuration.
 
 
 ==== GIT Config
 
 Version controlling the web server config can be a good idea. This will
-enable you to change the server configuration with just simple commit push to a remote repository.
+enable you to change the server configuration
+with just simple commit push to a remote repository.
 
+Following dependency must be declared in `*build.gradle*` file to enable git configuration.
 [source, groovy]
 ----
 implementation 'io.helidon.config:helidon-config-git:1.0.2'
 ----
 
+Following `*application.json*` file will be retrieved from the git repository.
 [source, json]
 ----
 include::../../chapter2/src/main/resources/application.json[]
 ----
 
-Which can be used to configure the web server as the following
+Configuration can be used as the following example.
 
 [source, java]
 ----
@@ -119,4 +123,7 @@ include::../../chapter2/src/main/java/com/cemnura/lab/Code3.java[]
 <1> Load `*application.json*` file from classpath
 <2> Get `*webserver*`object
 
-Helidon will automatically get configurable values as in YAML configuration.
+Helidon will automatically get configurable values as in JSON configuration.
+
+
+
