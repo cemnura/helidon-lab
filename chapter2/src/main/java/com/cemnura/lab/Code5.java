@@ -29,7 +29,7 @@ public class Code5 {
     public static void main(String[] args) {
 
         Config config = Config.create(
-                ConfigSources.file("chapter2\\src\\main\\resources\\application.yaml")  // <1>
+                ConfigSources.file("chapter2/src/main/resources/application2.yaml")  // <1>
                         .pollingStrategy(PollingStrategies.regular(Duration.ofSeconds(2))) // <2>
                 ).get("webserver");
 

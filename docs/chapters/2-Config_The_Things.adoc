@@ -45,6 +45,7 @@ implementation 'io.helidon.config:helidon-config-yaml:1.0.2'
 
 Here is an example `*YAML*` configuration
 
+.application.yaml
 [source, yaml]
 ----
 include::../../chapter2/src/main/resources/application.yaml[]
@@ -77,6 +78,8 @@ implementation 'io.helidon.config:helidon-config-hocon:1.0.2'
 ----
 
 We will use the following `*application.json*` file in this example.
+
+.application.json
 [source, json]
 ----
 include::../../chapter2/src/main/resources/application.json[]
@@ -142,4 +145,43 @@ include::../../chapter2/src/main/java/com/cemnura/lab/Code5.java[]
 <1> Determine the configuration file
 <2> Create PollingStratagies of 2 seconds
 <3> Define the operation when the configuration file is changed
+
+
+Configuration file used for this example is `*chapter2/src/main/resources/application2.yaml*`
+
+.application2.yaml
+[source, yaml]
+----
+include::../../chapter2/src/main/resources/application2.yaml[]
+----
+
+Lets now run the server and make a request from the server
+
+[source, bash]
+----
+curl localhost:8080
+----
+
+You should get a `*Hello*` response from the server
+and all log messages in the terminal.
+
+Lets now change the file and observe the changes on the server. Change the
+`greetings` and `loglevel` key values. Possible values for `loglevel` are designated
+in the `*YAML*` file.
+
+.changed applications2.yaml
+[source, yaml]
+----
+webserver:
+  port: 8080
+  bindingAddress: localhost
+  greetings: Greetings
+  loglevel: ERROR # ERROR, WARN, INFO
+----
+
+
+Now the changes should be reflected to the server.
+
+This can be a powerful option. Because we did not have to restart the server
+effectively decreasing our downtime.
 
