@@ -1,5 +1,3 @@
 webserver:
   port: 8080
   bindingAddress: localhost
-  greetings: Hello
-  loglevel: INFO # ERROR, WARN, INFO
