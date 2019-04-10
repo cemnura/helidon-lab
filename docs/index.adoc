@@ -11,3 +11,4 @@ v0.1, March, 28th, 2019
 include::docs/chapters/0-introduction.adoc[Introduction]
 include::docs/chapters/1-thinking_micro.adoc[Thinking Micro]
 include::docs/chapters/2-Config_The_Things.adoc[Configuration]
+include::docs/chapters/3-Microprofile.adoc[MicroProfile]

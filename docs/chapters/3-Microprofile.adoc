@@ -1,0 +1,156 @@
+== MicroProfile
+
+Helidon libraries also are compatible with Eclipse MicroProfile.
+The Eclipse MicroProfile project aimes to optimized Microservice
+architecture for Java EE platform.
+
+https://projects.eclipse.org/proposals/eclipse-microprofile[Eclipse MicroProfile Project]
+
+Enterprise Java environments that support Microprofile::
+* Wildfly Swarm
+* WebSphere Liberty
+* Payara
+* TomEEs
+
+
+Helidon is only a java library with an embedded *Netty* core.
+Projects developed in any Java EE platform can be converted to use Helidon.
+
+////
+TODO: Future benchmark with
+
+* Wildfly Swarm
+* WebSphere Liberty
+* Payara
+* TomEEs
+
+vs
+
+Helidon
+
+////
+
+
+=== Heldidon ME
+
+Now lets take a look at a MicroProfile service and run it with Helidon.
+
+Now open `chapter3/src/main/java/com/cemnura/service/FibonacciService.java`:
+
+[source, java]
+----
+include::../../chapter3/src/main/java/com/cemnura/service/FibonacciService.java[]
+----
+
+<1> Set root path
+<2> Specifies that a bean is request scoped
+<3> Indicates that the annotated method responds to HTTP GET requests
+<4> Identifies the URI path that a the method will serve
+<5> Defines the media type that the method produces
+<6> Defines URI path in which the method argument will use
+
+This class and class methods are annotated to create our service.
+
+
+Now open `chapter3/src/main/java/com/cemnura/server/App.java`:
+
+[source, java]
+----
+include::../../chapter3/src/main/java/com/cemnura/server/App.java[]
+----
+<1> Add class to resources of server
+<2> Start the server
+
+Now we will build the code and produce a `*jar*` file and run it.
+
+Run the following command in the terminal in project directory::
+[source, bash]
+----
+Bash
+
+    ./gradlew chapter3:jar
+
+Cmd
+
+    gradlew.bat chapter3:jar
+----
+
+Now you should have a build folder in chapter3.
+
+
+Now run the jar file with::
+----
+java -jar chapter3.jar
+----
+
+The server should start and output the following.
+
+
+****
+Apr 10, 2019 11:32:39 PM io.helidon.microprofile.security.SecurityMpService configure +
+ INFO: Security extension for microprofile is enabled, yet security configuration is missing from config (requires providers configuration at key security.providers). Security will not have any valid provider. +
+ Apr 10, 2019 11:32:41 PM io.netty.bootstrap.AbstractBootstrap setChannelOption +
+ WARNING: Unknown channel option '{}' for channel '{}' +
+ Apr 10, 2019 11:32:41 PM io.helidon.webserver.NettyWebServer lambda$start$7 +
+ INFO: Channel '@default' started: [id: 0x90b83b79, L:/0:0:0:0:0:0:0:0:8080] +
+ Apr 10, 2019 11:32:41 PM io.helidon.microprofile.server.ServerImpl lambda$start$9 +
+ INFO: Server started on http://localhost:8080 (and all other host addresses) in 900 milliseconds. +
+****
+
+Notice that the server is running on port `*8080*`. This is due to the servers configuration file which can be
+found in `*chapter3/src/main/resources/META-INF/microprofile-config.properties*`
+[source, properties]
+----
+include::../../chapter3/src/main/resources/META-INF/microprofile-config.properties[]
+----
+
+=== Run with Docker
+
+Now that our Fibonacci sequence service jar is ready. Its now time to run our service in a containerized
+environment.
+
+Since Helidon is just a library we can use a basic jvm docker container.
+There is no need to start a container that has a enterprise environment such as `Jakarta` or `Jboss Wildfly`.
+All we need is just the jar and the dependant libraries on a basic jvm environment.
+
+Now open `chapter3/DockerFile`:
+[source]
+----
+include::../../chapter3/DockerFile[]
+----
+
+This docker build steps will create a docker image for us to run later.
+
+Now in your terminal cd into the `*chapter3*` direcotry and run the following command
+[source, bash]
+----
+docker build --tag cemnura/fibonacci .
+----
+
+This will download the JVM container to use as a base and copy the required libs and jar file into the
+docker image with an image tag of `*cemnura/fibonacci*`.
+
+After the build operation is complete use the following to run the container::
+----
+docker run -p 8080:8080 cemnura/fibonacci
+----
+
+The `-p` option is required to forward the service port designated at `8080` to your computer.
+
+Now try out the fibonacci service::
+----
+curl -X GET http://localhost:8080/fibonacci/8
+curl -X GET http://localhost:8080/fibonacci/index/19
+----
+
+=== TODO
+
+Notice how http://localhost:8080/fibonacci/random is not working. This functionality is left for the review
+to implement. Open the `chapter3/src/main/java/com/cemnura/service/FibonacciService.java` and
+use MicroProfile annotations as in the previous class methods. Use any random range you like.
+
+
+=== Recap
+
+In this chapter we took a look at Heldion MicroProfile support
+as well as running our first helidon application in a docker environment.
