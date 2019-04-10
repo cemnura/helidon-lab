@@ -14,6 +14,8 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
+    implementation 'io.helidon.webserver:helidon-webserver:1.0.2'
+
     // YAML Configuration Support
     implementation 'io.helidon.config:helidon-config-yaml:1.0.2'
 
