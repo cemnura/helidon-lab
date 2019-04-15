@@ -1,0 +1,145 @@
+== Metrics & HealthChecks
+
+Eclipse foundation aimed to provide a protocol output for *health checks* and *metrics*
+
+Protocol Repository
+****
+https://github.com/eclipse/microprofile-health[]
+
+https://github.com/eclipse/microprofile-metrics[]
+****
+
+Metrics Definition according to Eclipse foundation::
+This specification aims at providing a unified way for
+Microprofile servers to export Monitoring data ("Telemetry") to management
+agents and also a unified Java API, that all (application) programmers can use to expose their telemetry data.
+
+Health Check Definition according to Eclipse foundation::
+Health checks are used to probe the state of a computing node from another
+machine (i.e. kubernetes service controller) with the primary target being
+cloud infrastructure environments where automated processes maintain the
+state of computing nodes.
+
+
+Helidon SE libraries support MicroProfile metrics. This can be useful for monitoring data for a service.
+Metrics supports adds reliability and observability to our service.
+
+Difference of health checks::
+*Health Checks* are more "Is my service running?" question. Based on the answer
+the service can be restart/terminated or replaced with a new instance. Whereas *Metrics* answers
+"How is my service running?". Based on the answer the service can be scaled or discover issues.
+
+
+=== MetricsSupport
+
+In chapter4 directory there are two runnable servers which we will observe.
+
+The Following dependency must be declared in `*build.gradle*`
+file to add Metrics support.
+
+[source, groovy]
+----
+implementation 'io.helidon.config:helidon-config-yaml:1.0.2'
+----
+
+Lets examine a basic server with metric support.
+
+Now open `chapter4/src/main/java/com/cemnura/server/SimpleMetricServer.java`:
+
+[source, java]
+----
+include::../../chapter4/src/main/java/com/cemnura/server/SimpleMetricServer.java[]
+----
+<1> import library
+<2> register MetricSupport to the server.
+
+
+Now run the java application and run the following commands.
+
+[sourec, bash]
+----
+curl -X GET http://localhost:8080/metrics
+----
+
+This will get all metrics that is built-in default into Helidon. The request can be retrieved in
+text format or JSON format.
+
+[sourec, bash]
+----
+Text
+curl -H "Accept: text/plain" -H "text/plain " -X GET http://localhost:8080/metrics
+
+JSON
+curl -H "Accept: application/json" -H "application/json" -X GET http://localhost:8080/metrics
+
+----
+
+Data can be retrieved in different scope such as [red]_base_ , [red]_vendor_ , [red]_application_.
+
+.base
+Microprofile base metrics
+[sourec, bash]
+----
+curl -X GET http://localhost:8080/metrics/base
+----
+
+.vendor
+Helidon Specific metrics
+[sourec, bash]
+----
+curl -X GET http://localhost:8080/metrics/vendor
+----
+
+.application:
+Application specific metrics
+[sourec, bash]
+----
+curl -X GET http://localhost:8080/metrics/application/
+----
+
+WARNING: Since our server is just a basic metric service there is no defined
+application metric.
+
+=== Customize Metrics Information
+
+Now let dive into a more complex metrics service and add application specific metrics.
+
+Now open `*chapter4/src/main/java/com/cemnura/service/StatisticService.java*`
+[source, java]
+----
+include::../../chapter4/src/main/java/com/cemnura/service/StatisticService.java[]
+----
+
+<1> Create RegistryFactory of MediaType [red]*application*
+<2> Access timer to record invocation duration
+<3> Access count to record invocation amount
+<4> Histogram object to record POST values
+<5> Create MetricSupport object custom metrics
+<6> Start access timer
+<7> Increment access count
+<8> Record post value to histogram
+
+We can now POST values to the server and observe the time the request
+takes on the server, the amount the service has ben invoked and
+the histogram of posted values.
+
+[source, bash]
+----
+
+curl -X POST -H "Content-Type: application/json" http://localhost:8080/statistic/record -d "{\"value\":5}"
+curl -X POST -H "Content-Type: application/json" http://localhost:8080/statistic/record -d "{\"value\":6}"
+curl -X POST -H "Content-Type: application/json" http://localhost:8080/statistic/record -d "{\"value\":6}"
+
+For all application scope:
+curl -X GET http://localhost:8080/statistic/metrics/application/
+
+For Specific custom variable in application scope:
+curl -X GET http://localhost:8080/statistic/metrics/application/timer
+curl -X GET http://localhost:8080/statistic/metrics/application/access_counter
+curl -X GET http://localhost:8080/statistic/metrics/application/histogram
+----
+
+These metrics provide critical information. For example, you can observe the duration
+of responses and scale the application or view the histogram of posted values.
+
+Lets move on to how we visualize these metrics.
