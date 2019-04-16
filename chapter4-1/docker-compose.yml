@@ -1,0 +1,21 @@
+version: "3"
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - 8080:8080
+    networks:
+      - app_network
+  prom:
+    image: quay.io/prometheus/prometheus:v2.0.0
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus"
+    ports:
+      - 9090:9090
+    networks:
+      - app_network
+networks:
+  app_network:
+    driver: bridge
