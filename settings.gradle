@@ -2,4 +2,8 @@ rootProject.name = 'HelidonLab'
 include 'chapter1'
 include 'chapter2'
 include 'chapter3'
+include 'demo:hero'
+findProject(':demo:hero')?.name = 'hero'
+include 'demo:quote'
+findProject(':demo:quote')?.name = 'quote'
 

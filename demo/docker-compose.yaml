@@ -1,0 +1,57 @@
+version: '3.1'
+
+services:
+  hero_server:
+    build:
+      context: ./hero
+    ports:
+    - 8081:8080
+    networks:
+      app_network:
+        aliases:
+        - hero-service
+  quote_server:
+    build:
+      context: ./quote
+    ports:
+    - 8082:8080
+    networks:
+      app_network:
+        aliases:
+        - quote-service
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+    - 9411:9411
+    networks:
+       app_network:
+         aliases:
+         - zipkin
+  db:
+    build:
+      context: ./database
+    ports:
+    - 3306:3306
+    networks:
+      app_network:
+        aliases:
+        - quote_database
+    volumes:
+    - "mysqldata"
+  prom:
+    image: prom/prometheus
+    volumes:
+    - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus"
+    ports:
+    - 9090:9090
+    networks:
+    - app_network
+
+volumes:
+  mysqldata:
+networks:
+  app_network:
+    driver: bridge
+
+

@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Batman",
+    "superpowers": [
+      "Flight",
+      "Martial arts",
+      "Eidetic memory"
+    ],
+    "villain": false,
+    "id": 0
+  },
+  {
+    "name": "Superman",
+    "superpowers": [
+      "Flight",
+      "Healing factor",
+      "Eidetic memory",
+      "Superhuman speed",
+      "Superhuman strength"
+    ],
+    "villain": false,
+    "id": 1
+  },
+  {
+    "name": "Wolverine",
+    "superpowers": [
+      "Healing factor",
+      "Regeneration"
+    ],
+    "villain": false,
+    "id": 2
+  },
+  {
+    "name": "Magneto",
+    "superpowers": [
+      "Flight",
+      "Magnetism"
+    ],
+    "villain": true,
+    "id": 3
+  }
+]
