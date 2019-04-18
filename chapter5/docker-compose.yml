@@ -1,0 +1,31 @@
+version: "3"
+services:
+  server_a:
+    build:
+      context: ./a-service
+    ports:
+    - 8081:8080
+    networks:
+      app_network:
+        aliases:
+        - server-a
+  server_b:
+    build:
+      context: ./b-service
+    ports:
+    - 8082:8080
+    networks:
+      app_network:
+        aliases:
+        - server-b
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+    - 9411:9411
+    networks:
+      app_network:
+        aliases:
+          - zipkin
+networks:
+  app_network:
+    driver: bridge

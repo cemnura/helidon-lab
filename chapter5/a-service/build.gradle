@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+}
+
+group 'com.cemnura'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation 'io.helidon.webserver:helidon-webserver:1.0.2'
+    implementation 'io.helidon.tracing:helidon-tracing-zipkin:1.0.2'
+    compile group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '2.6'
+    compile group: 'io.helidon.tracing', name: 'helidon-tracing-jersey', version: '1.0.3'
+    
+    // YAML Configuration Support
+    implementation 'io.helidon.config:helidon-config-yaml:1.0.2'
+}
+
+// define a custom task to copy all dependencies in the runtime classpath
+task copyLibs(type: Copy) {
+    from configurations.compileClasspath
+    into 'build/libs/libs'
+}
+
+
+jar {
+
+    dependsOn copyLibs
+
+    manifest {
+        attributes(
+                "Implementation-Title": project.name,
+                "Main-Class": 'com.cemnura.server.ServerApplication',
+                'Class-Path': configurations.compileClasspath.files.collect { "libs/$it.name" }.join(' ')
+        )
+    }
+}

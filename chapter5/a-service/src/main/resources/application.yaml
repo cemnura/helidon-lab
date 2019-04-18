@@ -1,0 +1,27 @@
+env: docker
+
+server:
+  port: 8080
+  #backlog: 5
+  #workers: 2
+  #timeout: 5
+services:
+  b:
+    endpoint: "http://server-b:8080"
+tracing:
+  zipkin:
+    service: "helidon-service-a"
+    protocol: "http"
+    host: "zipkin"
+    api-version: 2
+    # this is the default path for API version 2
+    path: "/api/v2/spans"
+    tags:
+      tag1: "tag1-value"
+      tag2: "tag2-value"
+    boolean-tags:
+      tag3: true
+      tag4: false
+    int-tags:
+      tag5: 145
+      tag6: 741
