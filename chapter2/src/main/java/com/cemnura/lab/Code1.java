@@ -1,6 +1,5 @@
 package com.cemnura.lab;
 
-import com.cemnura.util.HelidonUtil;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.ServerConfiguration;
 import io.helidon.webserver.WebServer;
