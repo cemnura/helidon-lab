@@ -2,8 +2,7 @@ package com.cemnura.service;
 
 import com.cemnura.dal.QuoteDBAccess;
 import com.cemnura.entity.MovieCharacter;
-import com.cemnura.entity.Quote;
-import com.cemnura.exception.CharacterNotFoundException;
+import com.cemnura.util.Converter;
 import io.helidon.media.jsonp.server.JsonSupport;
 import io.helidon.webserver.*;
 import io.opentracing.Span;
@@ -13,11 +12,10 @@ import io.opentracing.util.GlobalTracer;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 
+
 import javax.json.*;
-import javax.json.stream.JsonCollectors;
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+
 
 public class QuoteHandler implements Service {
 
@@ -30,7 +28,7 @@ public class QuoteHandler implements Service {
 
     public QuoteHandler() {
         quote_provided_counter = Counter.build("quote_provided_counter", "Counter for quote provided").register();
-        in_progress_request_gauge = Gauge.build("quote_service_in_progress_request_gauge", "Gauge for request in progress").register();
+        in_progress_request_gauge = Gauge.build(        "quote_service_in_progress_request_gauge", "Gauge for request in progress").register();
     }
 
     @Override
@@ -38,34 +36,50 @@ public class QuoteHandler implements Service {
 
         rules
                 .register(JsonSupport.create())
+                .any(this::incProgressGauge)
                 .get("/{name}",this::getCharacterQuotes)
                 .post("/register", Handler.create(JsonObject.class, this::register))
+                .post("/append", Handler.create(JsonObject.class, this::appendQuotes))
                 ;
 
     }
 
-    private void register(ServerRequest req, ServerResponse res, JsonObject jsonObject)
+    private void appendQuotes(ServerRequest req, ServerResponse res, JsonObject jsonObject)
     {
-        String name = jsonObject.getString("name");
+        MovieCharacter movieCharacter = Converter.jsonToEntity(jsonObject);
 
-        List<Quote> quotes = jsonObject.getJsonArray("quotes").getValuesAs(jsonValue -> {
-            String quote = jsonValue.asJsonObject().getString("quote");
-            Quote q = new Quote();
+        Span span = tracer.buildSpan("quote.appendQuotes")
+                .asChildOf(req.spanContext())
+                .withTag("operation", "database.persist")
+                .start();
 
-            q.setQuote(quote);
-            return q;
-        });
-
-        MovieCharacter movieCharacter = new MovieCharacter();
-
-        movieCharacter.setName(name);
-
-        quotes.forEach(quote -> movieCharacter.addQuote(quote));
-
-
-        QuoteDBAccess.insertCharacter(movieCharacter);
+        try {
+            QuoteDBAccess.appendQuotes(movieCharacter.getName(), movieCharacter.getQuotes());
+        }finally {
+            span.finish();
+        }
 
         res.send("Registered");
+        decProgressGauge();
+    }
+
+    private void register(ServerRequest req, ServerResponse res, JsonObject jsonObject)
+    {
+        MovieCharacter movieCharacter = Converter.jsonToEntity(jsonObject);
+
+        Span span = tracer.buildSpan("quote.register")
+                .asChildOf(req.spanContext())
+                .withTag("operation", "database.persist")
+                .start();
+
+        try {
+            QuoteDBAccess.insertCharacter(movieCharacter);
+        }finally {
+            span.finish();
+        }
+
+        res.send("Registered");
+        decProgressGauge();
     }
 
     private void getCharacterQuotes(ServerRequest req, ServerResponse res)
@@ -76,6 +90,7 @@ public class QuoteHandler implements Service {
         JsonObject result = prepareResponse(movieCharacter);
 
         res.send(result);
+        decProgressGauge();
     }
 
     private MovieCharacter getMovieCharacter(String name, SpanContext spanContext)
@@ -87,16 +102,9 @@ public class QuoteHandler implements Service {
                 .start();
 
         try {
+            MovieCharacter character = QuoteDBAccess.getCharacterByName(name);
 
-            Optional<MovieCharacter> character = QuoteDBAccess.getCharacterByName(name);
-
-            if (!character.isPresent()) {
-                throw new CharacterNotFoundException("Character is not found");
-            }
-
-            MovieCharacter movieCharacter = character.get();
-
-            return movieCharacter;
+            return character;
 
         }finally {
             span.finish();
@@ -106,22 +114,25 @@ public class QuoteHandler implements Service {
     private JsonObject prepareResponse(MovieCharacter movieCharacter)
     {
 
-        JsonObjectBuilder result = jsonFactory.createObjectBuilder().add("name", movieCharacter.getName());
+        JsonObject jsonObject = Converter.entityToJson(movieCharacter);
 
-        JsonArray quoteArray =  movieCharacter.getQuotes().stream()
-                .map(quote -> jsonFactory.createObjectBuilder().add("quote", quote.getQuote()).build())
-                .collect(JsonCollectors.toJsonArray());
+        incQuoteProvidedCounter(jsonObject.getJsonArray("quotes").size());
 
-        incQuoteProvidedCounter(quoteArray.size());
-
-        result.add("quotes", quoteArray);
-
-        return result.build();
+        return jsonObject;
     }
 
     private void incQuoteProvidedCounter(int size)
     {
         quote_provided_counter.inc(size);
+    }
+    private void incProgressGauge(ServerRequest req, ServerResponse res)
+    {
+        in_progress_request_gauge.inc();
+        req.next();
+    }
+    private void decProgressGauge()
+    {
+        in_progress_request_gauge.dec();
     }
 }
 

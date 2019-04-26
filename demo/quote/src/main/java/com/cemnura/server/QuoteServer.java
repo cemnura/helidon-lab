@@ -11,6 +11,7 @@ import io.helidon.webserver.ServerConfiguration;
 import io.helidon.webserver.WebServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.exception.ConstraintViolationException;
 
 public class QuoteServer {
 
@@ -33,6 +34,10 @@ public class QuoteServer {
                 .error(CharacterNotFoundException.class, (req, res, ex) -> {
                     res.status(Http.Status.NOT_FOUND_404);
                     res.send(ex.getMessage());
+                })
+                .error(ConstraintViolationException.class, (req, res, ex) -> {
+                    res.status(Http.Status.BAD_REQUEST_400);
+                    res.send("Character already exist");
                 })
                 .build();
     }

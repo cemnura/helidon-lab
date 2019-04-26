@@ -1,5 +1,7 @@
 package com.cemnura.entity;
 
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ public class MovieCharacter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NaturalId
     private String name;
 
     @OneToMany(mappedBy = "hero",

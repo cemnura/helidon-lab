@@ -12,12 +12,9 @@
 
         <property name="connection_pool_size">1</property>
 
-        <property name="hbm2ddl.auto">create</property>
+        <property name="hbm2ddl.auto">validate</property>
         <property name="hibernate.order_updates">true</property>
-        <property name="hibernate.enable_lazy_load_no_trans">true</property>
-
-
-        <property name="show_sql">true</property>
+        <property name="show_sql">false</property>
 
         <mapping class="com.cemnura.entity.Quote"/>
         <mapping class="com.cemnura.entity.MovieCharacter"/>

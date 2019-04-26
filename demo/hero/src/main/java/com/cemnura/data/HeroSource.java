@@ -8,14 +8,15 @@ import javax.json.stream.JsonCollectors;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Random;
+import java.util.function.Predicate;
 
 public class HeroSource {
 
     private static JsonArray heroArray;
 
-    static {
-
-        try (InputStream is = new FileInputStream("heroes.json")){
+    public HeroSource(String file) {
+        try (InputStream is = new FileInputStream(file)){
 
             JsonReader reader = Json.createReader(is);
 
@@ -24,15 +25,19 @@ public class HeroSource {
         }catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
-    public static JsonValue hero()
+    public JsonValue getByIndex(int index)
     {
-        return heroArray.get(0);
+        return heroArray.get(index);
     }
 
-    public static JsonValue getVillains()
+    public JsonValue getAll()
+    {
+        return heroArray;
+    }
+
+    public JsonValue getVillains()
     {
         return heroArray
                 .stream()
@@ -40,12 +45,29 @@ public class HeroSource {
                 .collect(JsonCollectors.toJsonArray());
     }
 
-    public static JsonValue getHeroes()
+    public JsonValue getHeroes()
     {
         return heroArray
                 .stream()
                 .filter(jsonValue -> !jsonValue.asJsonObject().getBoolean("villain"))
                 .collect(JsonCollectors.toJsonArray());
+    }
+
+    public JsonValue getHeroes(Predicate<JsonValue> startWith)
+    {
+        return heroArray
+                .stream()
+                .filter(jsonValue -> !jsonValue.asJsonObject().getBoolean("villain"))
+                .filter(startWith)
+                .collect(JsonCollectors.toJsonArray());
+    }
+
+    public JsonValue getRandom()
+    {
+        Random random = new Random();
+        int randomIndex = random.nextInt(heroArray.size());
+
+        return heroArray.get(randomIndex);
     }
 
 }

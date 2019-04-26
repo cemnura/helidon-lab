@@ -2,12 +2,15 @@ package com.cemnura.dal;
 
 import com.cemnura.db.HibernateUtil;
 import com.cemnura.entity.MovieCharacter;
+import com.cemnura.entity.Quote;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 
+import javax.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -30,15 +33,17 @@ public class QuoteDBAccess {
         }catch (Exception ex){
             logger.warn(ex.getMessage());
             if (tx != null)
-                tx.rollback();
+                ;
+               // tx.rollback();
+            throw ex;
         }finally {
-            //tx.commit();
+//            tx.commit();
         }
 
         return result;
     }
 
-    public static List<MovieCharacter> getCharacterList(String name)
+    public static List<MovieCharacter> getCharacterList()
     {
         try (Session session = HibernateUtil.openSession()){
 
@@ -54,7 +59,7 @@ public class QuoteDBAccess {
         return Collections.emptyList();
     }
 
-    public static Optional<MovieCharacter> getCharacterByName(String name)
+    public static MovieCharacter getCharacterByName(String name)
     {
         Transaction tx;
 
@@ -63,17 +68,44 @@ public class QuoteDBAccess {
             tx = session.beginTransaction();
 
             String hql = " FROM MovieCharacter C WHERE C.name = :name";
-            Query query = session.createQuery(hql);
+            TypedQuery<MovieCharacter> query = session.createQuery(hql);
             query.setParameter("name", name);
 
-            return Optional.of((MovieCharacter) query.getSingleResult());
+            return query.getSingleResult();
 
         }catch (Exception ex){
             logger.warn(ex.getMessage());
-        }finally {
+            throw ex;
         }
-
-        return Optional.empty();
     }
 
+    public static void appendQuotes(String name, List<Quote> quotes)
+    {
+        MovieCharacter character = getCharacterByName(name);
+
+        quotes.forEach(quote -> {
+            character.addQuote(quote);
+            quote.setHero(character);
+        });
+
+
+        Long result = -1L;
+        Transaction tx = null;
+
+        try (Session session = HibernateUtil.openSession()){
+
+            tx = session.beginTransaction();
+
+            session.merge(character);
+
+        }catch (Exception ex){
+            logger.warn(ex.getMessage());
+            if (tx != null)
+                // tx.rollback();
+                throw ex;
+        }finally {
+//            tx.commit();
+        }
+
+    }
 }
