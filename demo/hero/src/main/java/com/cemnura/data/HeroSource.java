@@ -1,11 +1,7 @@
 package com.cemnura.data;
 
-import io.opentracing.Span;
-import io.opentracing.SpanContext;
-
 import javax.json.*;
 import javax.json.stream.JsonCollectors;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Random;
@@ -18,7 +14,8 @@ public class HeroSource {
 
     private static final Function<String, Predicate<JsonValue>> filterFunction = startsWith -> json -> json.asJsonObject().getString("name").startsWith(startsWith);
 
-    public HeroSource(String file) {
+    public HeroSource(String file)
+    {
         try (InputStream is = new FileInputStream(file)){
 
             JsonReader reader = Json.createReader(is);
