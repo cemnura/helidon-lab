@@ -1,6 +1,7 @@
 package com.cemnura.server;
 
 import com.cemnura.service.HeroHandler;
+import io.helidon.common.http.Http;
 import io.helidon.config.Config;
 import io.helidon.metrics.MetricsSupport;
 import io.helidon.metrics.prometheus.PrometheusSupport;
@@ -8,6 +9,7 @@ import io.helidon.tracing.TracerBuilder;
 import io.helidon.tracing.zipkin.ZipkinTracer;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.ServerConfiguration;
+import io.helidon.webserver.StaticContentSupport;
 import io.helidon.webserver.WebServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,9 +30,11 @@ public class HeroServer {
     private static Routing createRouting()
     {
         return Routing.builder()
+                .register("/", StaticContentSupport.create("/images"))
                 .register(PrometheusSupport.create())
                 .register("/api/hero", HeroHandler::new)
                 .error(Exception.class, (req, res, ex) -> {
+                    res.status(Http.Status.BAD_REQUEST_400);
                     res.send("Woops");
                     logger.info(ex.getMessage());
                 })

@@ -19,8 +19,6 @@ import java.util.Collections;
 
 public class QuoteHandler implements Service {
 
-    private static final JsonBuilderFactory jsonFactory = Json.createBuilderFactory(Collections.emptyMap());
-
     private final Tracer tracer = GlobalTracer.get();
 
     private final Gauge in_progress_request_gauge;
@@ -95,7 +93,6 @@ public class QuoteHandler implements Service {
 
     private MovieCharacter getMovieCharacter(String name, SpanContext spanContext)
     {
-
         Span span = tracer.buildSpan("quote.getMovieCharacter")
                 .asChildOf(spanContext)
                 .withTag("operation", "database.connect")
@@ -105,7 +102,6 @@ public class QuoteHandler implements Service {
             MovieCharacter character = QuoteDBAccess.getCharacterByName(name);
 
             return character;
-
         }finally {
             span.finish();
         }
@@ -113,7 +109,6 @@ public class QuoteHandler implements Service {
 
     private JsonObject prepareResponse(MovieCharacter movieCharacter)
     {
-
         JsonObject jsonObject = Converter.entityToJson(movieCharacter);
 
         incQuoteProvidedCounter(jsonObject.getJsonArray("quotes").size());

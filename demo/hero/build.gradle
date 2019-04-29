@@ -24,8 +24,14 @@ dependencies {
 
     // Zipkin support
     implementation 'io.helidon.tracing:helidon-tracing-zipkin:1.0.2'
+    implementation group: 'io.helidon.tracing', name: 'helidon-tracing-jersey', version: '1.0.3'
+
 
     implementation 'io.helidon.metrics:helidon-metrics:1.0.2'
+
+    implementation group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '2.6'
+    implementation group: 'org.glassfish.jersey.media', name: 'jersey-media-json-processing', version: '2.7'
+
 
     // Log4j2 libraries
     implementation  group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'

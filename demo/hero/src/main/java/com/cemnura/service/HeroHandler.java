@@ -1,9 +1,12 @@
 package com.cemnura.service;
 
+import com.cemnura.client.QuoteServiceClient;
 import com.cemnura.data.HeroSource;
+import io.helidon.config.Config;
 import io.helidon.media.jsonp.server.JsonSupport;
 import io.helidon.webserver.*;
 import io.opentracing.Span;
+import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
@@ -12,7 +15,10 @@ import io.prometheus.client.Counter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.json.JsonValue;
+import javax.json.*;
+import javax.json.stream.JsonGeneratorFactory;
+import java.util.Collections;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -27,6 +33,9 @@ public class HeroHandler implements Service{
     private final Gauge in_progress_request_gauge;
     private final Counter hero_request_counter;
     private final Counter villain_request_counter;
+    private static final JsonBuilderFactory jsonFactory = Json.createBuilderFactory(Collections.emptyMap());
+
+    private static final QuoteServiceClient quoteClient = new QuoteServiceClient(Config.create());
 
 
     public HeroHandler() {
@@ -43,11 +52,13 @@ public class HeroHandler implements Service{
                   .register(JsonSupport.create())
                   .get("/id/{id}", this::getHeroById)
                   .get("/heroes", this::incHeroRequestCount)
-                  .get("/heroes", RequestPredicate.create().containsQueryParameter("startsWith").thenApply(this::getHeroesStartsWith))
-                  .get("/heroes", this::getHeroes)
+                  .get("/heroes", RequestPredicate.create()
+                          .containsQueryParameter("startsWith").thenApply(this::getHeroesStartsWith)
+                          .otherwise(this::getHeroes))
                   .get("/villains", this::incVillainRequestCount)
-                  .get("/villains", RequestPredicate.create().containsQueryParameter("startsWith").thenApply(this::getVillainsStartsWith))
-                  .get("/villains", this::getVillains)
+                  .get("/villains", RequestPredicate.create()
+                          .containsQueryParameter("startsWith").thenApply(this::getVillainsStartsWith)
+                          .otherwise(this::getVillains))
                   .get("/all", this::getAll)
                   .get("/random", this::getRandomHero);
     }
@@ -99,11 +110,14 @@ public class HeroHandler implements Service{
         try {
             JsonValue jsonValue = heroSource.getByIndex(index);
 
+            if (req.queryParams().first("getQuotes").isPresent() && Boolean.valueOf(req.queryParams().first("getQuotes").get()))
+                jsonValue = getQuoteForHero(req, jsonValue);
+
             sendResponse(res, jsonValue);
+
         }finally {
             span.finish();
         }
-
     }
 
     private void getAll(ServerRequest req, ServerResponse res)
@@ -125,7 +139,6 @@ public class HeroHandler implements Service{
 
         try {
             JsonValue responseContent = heroSource.getHeroes();
-
             sendResponse(res, responseContent);
         }finally {
             span.finish();
@@ -186,10 +199,24 @@ public class HeroHandler implements Service{
         try {
             JsonValue result = heroSource.getRandom();
 
+            if (req.queryParams().first("getQuotes").isPresent() && Boolean.valueOf(req.queryParams().first("getQuotes").get()))
+                result = getQuoteForHero(req, result);
+
             sendResponse(res, result);
         }finally {
             span.finish();
         }
     }
+
+    private JsonObject getQuoteForHero(ServerRequest req, JsonValue jsonValue)
+    {
+        String name = jsonValue.asJsonObject().getString("name");
+
+        JsonObject quotes = quoteClient.getQuote(name, req.spanContext());
+
+        JsonObjectBuilder builder = jsonFactory.createObjectBuilder(jsonValue.asJsonObject()).add("quotes", quotes.getJsonArray("quotes"));
+        return builder.build();
+    }
+
 
 }
