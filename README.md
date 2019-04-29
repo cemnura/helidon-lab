@@ -19,7 +19,7 @@ Helidon supports many miroservice enviroment tools such as:
 * JSON
 * JERSEY
 
-This lab also covers how to prometheus, zipkin and docker usage with Helidon libraries.
+This lab also covers prometheus, zipkin and docker usage with Helidon libraries.
 
 
 ## Content
