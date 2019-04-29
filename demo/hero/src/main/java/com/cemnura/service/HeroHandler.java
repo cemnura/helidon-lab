@@ -46,6 +46,7 @@ public class HeroHandler implements Service{
                   .get("/heroes", RequestPredicate.create().containsQueryParameter("startsWith").thenApply(this::getHeroesStartsWith))
                   .get("/heroes", this::getHeroes)
                   .get("/villains", this::incVillainRequestCount)
+                  .get("/villains", RequestPredicate.create().containsQueryParameter("startsWith").thenApply(this::getVillainsStartsWith))
                   .get("/villains", this::getVillains)
                   .get("/all", this::getAll)
                   .get("/random", this::getRandomHero);
@@ -99,9 +100,7 @@ public class HeroHandler implements Service{
             JsonValue jsonValue = heroSource.getByIndex(index);
 
             sendResponse(res, jsonValue);
-
         }finally {
-
             span.finish();
         }
 
@@ -111,59 +110,86 @@ public class HeroHandler implements Service{
     {
         Span span = tracer.buildSpan("HeroSource.getAll").asChildOf(req.spanContext()).start();
 
-        JsonValue responseContent = heroSource.getAll();
+        try {
+            JsonValue responseContent = heroSource.getAll();
 
-        sendResponse(res, responseContent);
-
-        span.finish();
+            sendResponse(res, responseContent);
+        }finally {
+            span.finish();
+        }
     }
 
     private void getHeroes(ServerRequest req, ServerResponse res)
     {
         Span span = tracer.buildSpan("HeroSource.getHeroes").asChildOf(req.spanContext()).start();
 
-        JsonValue responseContent = heroSource.getHeroes();
+        try {
+            JsonValue responseContent = heroSource.getHeroes();
 
-        sendResponse(res, responseContent);
+            sendResponse(res, responseContent);
+        }finally {
+            span.finish();
+        }
 
-        span.finish();
     }
 
     private void getHeroesStartsWith(ServerRequest req, ServerResponse res)
     {
+        String startsWith = req.queryParams().first("startsWith").orElseThrow(IllegalArgumentException::new);
+
         Span span = tracer.buildSpan("HeroSource.getHeroesStartsWith").asChildOf(req.spanContext()).start();
 
-        String filter = req.queryParams().first("startsWith").orElseThrow(IllegalArgumentException::new);
+        try {
+            JsonValue responseContent = heroSource.getHeroes(startsWith);
 
-        Function<String, Predicate<JsonValue>> filterFunction = s -> json -> json.asJsonObject().getString("name").startsWith(s);
+            sendResponse(res, responseContent);
+        }finally {
+            span.finish();
+        }
 
-        JsonValue responseContent = heroSource.getHeroes(filterFunction.apply(filter));
-
-        sendResponse(res, responseContent);
-
-        span.finish();
     }
 
     private void getVillains(ServerRequest req, ServerResponse res)
     {
         Span span = tracer.buildSpan("HeroSource.getVillains").asChildOf(req.spanContext()).start();
 
-        JsonValue responseContent = heroSource.getVillains();
+        try {
+            JsonValue responseContent = heroSource.getVillains();
 
-        sendResponse(res, responseContent);
+            sendResponse(res, responseContent);
+        }finally {
+            span.finish();
+        }
 
-        span.finish();
+    }
+
+    private void getVillainsStartsWith(ServerRequest req, ServerResponse res)
+    {
+        String startsWith = req.queryParams().first("startsWith").orElseThrow(IllegalArgumentException::new);
+
+        Span span = tracer.buildSpan("HeroSource.getVillainsStartsWith").asChildOf(req.spanContext()).start();
+
+        try {
+            JsonValue responseContent = heroSource.getVillains(startsWith);
+
+            sendResponse(res, responseContent);
+        }finally {
+            span.finish();
+        }
+
     }
 
     private void getRandomHero(ServerRequest req, ServerResponse res)
     {
         Span span = tracer.buildSpan("HeroSource.getRandom").asChildOf(req.spanContext()).start();
 
-        JsonValue result = heroSource.getRandom();
+        try {
+            JsonValue result = heroSource.getRandom();
 
-        sendResponse(res, result);
-
-        span.finish();
+            sendResponse(res, result);
+        }finally {
+            span.finish();
+        }
     }
 
 }

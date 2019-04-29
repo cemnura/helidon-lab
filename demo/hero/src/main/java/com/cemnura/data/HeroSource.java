@@ -9,11 +9,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class HeroSource {
 
     private static JsonArray heroArray;
+
+    private static final Function<String, Predicate<JsonValue>> filterFunction = startsWith -> json -> json.asJsonObject().getString("name").startsWith(startsWith);
 
     public HeroSource(String file) {
         try (InputStream is = new FileInputStream(file)){
@@ -45,6 +48,15 @@ public class HeroSource {
                 .collect(JsonCollectors.toJsonArray());
     }
 
+    public JsonValue getVillains(String startWith)
+    {
+        return heroArray
+                .stream()
+                .filter(jsonValue -> jsonValue.asJsonObject().getBoolean("villain"))
+                .filter(filterFunction.apply(startWith))
+                .collect(JsonCollectors.toJsonArray());
+    }
+
     public JsonValue getHeroes()
     {
         return heroArray
@@ -53,12 +65,12 @@ public class HeroSource {
                 .collect(JsonCollectors.toJsonArray());
     }
 
-    public JsonValue getHeroes(Predicate<JsonValue> startWith)
+    public JsonValue getHeroes(String startWith)
     {
         return heroArray
                 .stream()
                 .filter(jsonValue -> !jsonValue.asJsonObject().getBoolean("villain"))
-                .filter(startWith)
+                .filter(filterFunction.apply(startWith))
                 .collect(JsonCollectors.toJsonArray());
     }
 
