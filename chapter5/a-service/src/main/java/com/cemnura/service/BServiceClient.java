@@ -26,22 +26,24 @@ public class BServiceClient {
         this.serviceEndpoint = config.get("services.b.endpoint").asString().get();
     }
 
+    // tag::callservice[]
     public String callService(SpanContext spanContext)
     {
-        Span span = tracer.buildSpan("service.b.call")
-                .asChildOf(spanContext)
-                .start();
+        Span span = tracer.buildSpan("service.b.call")  // <1>
+                .asChildOf(spanContext) // <2>
+                .start();   // <3>
 
         try {
             Response response = client.target(serviceEndpoint + "/")
                     .request()
-                    .property(ClientTracingFilter.TRACER_PROPERTY_NAME, tracer)
-                    .property(ClientTracingFilter.CURRENT_SPAN_CONTEXT_PROPERTY_NAME, spanContext)
+                    .property(ClientTracingFilter.TRACER_PROPERTY_NAME, tracer) // <4>
+                    .property(ClientTracingFilter.CURRENT_SPAN_CONTEXT_PROPERTY_NAME, spanContext)  // <5>
                     .get();
             return response.readEntity(String.class);
         }finally {
-            span.finish();
+            span.finish();  // <6>
         }
 
     }
+    // end::callservice[]
 }
