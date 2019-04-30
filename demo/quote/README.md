@@ -1,10 +1,10 @@
 # API Resources  
- - [GET quote/[name]](#get-name)  
+ - [GET quote/[name]](#get-quote)  
  - [POST quote/register](#post-register)  
  - [POST quote/append](#post-append)  
 
   
-## GET quote/[name]
+## GET quote
 
 Example: READ - GET  
 Example: http://localhost:8082/quote/Magneto  
@@ -26,7 +26,7 @@ Response body:
         ]
     }
 
-## POST quote/register  
+## POST register  
   
 Example: Create - POST
 http://localhost:8082/quote/register
@@ -48,7 +48,7 @@ Response:
 
     Registered
   
-## POST quote/append
+## POST append
   
 Example: UPDATE – POST  
 http://localhost:8082/quote/append
