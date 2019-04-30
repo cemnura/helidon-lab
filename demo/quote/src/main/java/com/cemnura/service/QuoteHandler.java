@@ -57,7 +57,7 @@ public class QuoteHandler implements Service {
             span.finish();
         }
 
-        res.send("Registered");
+        res.send("Success");
         decProgressGauge();
     }
 
