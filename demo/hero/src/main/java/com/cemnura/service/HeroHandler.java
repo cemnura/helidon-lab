@@ -102,12 +102,12 @@ public class HeroHandler implements Service{
     private void getHeroById(ServerRequest req, ServerResponse res)
     {
         String id = req.path().param("id");
-
-        int index = Integer.parseInt(id);
-
         Span span = tracer.buildSpan("HeroSource.getHeroById").asChildOf(req.spanContext()).start();
 
         try {
+
+            int index = Integer.parseInt(id);
+
             JsonValue jsonValue = heroSource.getByIndex(index);
 
             if (req.queryParams().first("getQuotes").isPresent() && Boolean.valueOf(req.queryParams().first("getQuotes").get()))
@@ -115,6 +115,9 @@ public class HeroHandler implements Service{
 
             sendResponse(res, jsonValue);
 
+        }catch (Exception ex) {
+            decProcessGauge();
+            throw ex;
         }finally {
             span.finish();
         }
