@@ -1,0 +1,11 @@
+server:
+  port: 8080
+services:
+  quote:
+    endpoint: "http://quote-service:8080"
+tracing:
+  zipkin:
+    service: "hero-service"
+    protocol: "http"
+    host: "zipkin"
+    api-version: 2
