@@ -1,26 +1,10 @@
 package com.cemnura.server;
 
 import com.cemnura.service.BServiceClient;
-import io.helidon.common.http.Http;
 import io.helidon.config.Config;
 import io.helidon.config.ConfigSources;
-import io.helidon.config.spi.Source;
 import io.helidon.tracing.TracerBuilder;
-import io.helidon.tracing.zipkin.ZipkinTracer;
-import io.helidon.tracing.zipkin.ZipkinTracerBuilder;
 import io.helidon.webserver.*;
-import io.opentracing.Tracer;
-
-import java.io.File;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.LocalDate;
-import java.util.concurrent.TimeoutException;
-
-import static io.helidon.config.ConfigSources.classpath;
-import static io.helidon.config.ConfigSources.file;
 
 public class ServerApplication {
 
@@ -43,11 +27,12 @@ public class ServerApplication {
 
     }
 
+    // tag::configuration[]
     private static ServerConfiguration serverConfiguration(Config config)
     {
-        return ServerConfiguration.builder(config.get("server"))
-                .tracer(TracerBuilder.create(config.get("tracing.zipkin")).buildAndRegister())
+        return ServerConfiguration.builder(config.get("server"))    // <1>
+                .tracer(TracerBuilder.create(config.get("tracing.zipkin")).buildAndRegister())  // <2>
                 .build();
     }
-
+    // end::configuration[]
 }
