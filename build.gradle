@@ -1,18 +1,22 @@
+
 plugins {
     id 'org.asciidoctor.jvm.convert' version '2.0.0'
 }
-
 
 group 'com.cemnura'
 version '1.0-SNAPSHOT'
 
 
+subprojects {
+    ext.helidonVersion = '1.0.3'
+
+}
+
 repositories {
     mavenCentral()
 }
 
-
-asciidoctor {
+asciidoctor {   
 
     group = "documentation"
 

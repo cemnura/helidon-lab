@@ -12,15 +12,17 @@ repositories {
 
 dependencies {
 
-    compile 'io.helidon.webserver:helidon-webserver:1.0.2'
+    // Helidon Webserver
+    implementation "io.helidon.webserver:helidon-webserver:$helidonVersion"
 
     // Helidon Prometheus Support
-    implementation 'io.helidon.metrics:helidon-metrics-prometheus:1.0.2'
+    implementation "io.helidon.metrics:helidon-metrics-prometheus:$helidonVersion"
 
     // YAML Configuration Support
-    implementation 'io.helidon.config:helidon-config-yaml:1.0.2'
+    implementation "io.helidon.config:helidon-config-yaml:$helidonVersion"
 
-    implementation 'io.helidon.media.jsonp:helidon-media-jsonp-server:1.0.2'
+    // Helidon JSON Support
+    implementation "io.helidon.media.jsonp:helidon-media-jsonp-server:$helidonVersion"
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'

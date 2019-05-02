@@ -17,19 +17,19 @@ dependencies {
     implementation group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
 
 
-    implementation  'io.helidon.webserver:helidon-webserver:1.0.2'
-    implementation  'io.helidon.media.jsonp:helidon-media-jsonp-server:1.0.2'
+    implementation "io.helidon.webserver:helidon-webserver:$helidonVersion"
+    implementation "io.helidon.media.jsonp:helidon-media-jsonp-server:$helidonVersion"
 
     // YAML Configuration Support
-    implementation  'io.helidon.config:helidon-config-yaml:1.0.2'
+    implementation "io.helidon.config:helidon-config-yaml:$helidonVersion"
 
     // Prometheus support
-    implementation 'io.helidon.metrics:helidon-metrics-prometheus:1.0.2'
+    implementation "io.helidon.metrics:helidon-metrics-prometheus:$helidonVersion"
 
     // Zipkin support
-    implementation 'io.helidon.tracing:helidon-tracing-zipkin:1.0.2'
+    implementation "io.helidon.tracing:helidon-tracing-zipkin:$helidonVersion"
 
-    implementation 'io.helidon.metrics:helidon-metrics:1.0.2'
+    implementation "io.helidon.metrics:helidon-metrics:$helidonVersion"
 
     // Log4j2 libraries
     implementation  group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'

@@ -4,7 +4,6 @@ plugins {
 
 }
 
-
 group 'com.cemnura'
 version '1.0-SNAPSHOT'
 
@@ -16,9 +15,9 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    implementation 'io.helidon.webserver:helidon-webserver:1.0.2'
-    implementation 'io.helidon.media.jsonp:helidon-media-jsonp-server:1.0.2'
+    implementation "io.helidon.webserver:helidon-webserver:$helidonVersion"
+    implementation "io.helidon.media.jsonp:helidon-media-jsonp-server:$helidonVersion"
 
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
 }

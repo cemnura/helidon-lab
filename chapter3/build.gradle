@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
 
-    compile 'io.helidon.microprofile.bundles:helidon-microprofile-1.2:1.0.2'
+    implementation "io.helidon.microprofile.bundles:helidon-microprofile-1.2:$helidonVersion"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
