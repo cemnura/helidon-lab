@@ -31,7 +31,8 @@ public class ServerApplication {
     private static ServerConfiguration serverConfiguration(Config config)
     {
         return ServerConfiguration.builder(config.get("server"))    // <1>
-                .tracer(TracerBuilder.create(config.get("tracing.zipkin")).buildAndRegister())  // <2>
+                .tracer(TracerBuilder.create(config.get("tracing.zipkin"))  // <2>
+                        .buildAndRegister())  // <3>
                 .build();
     }
     // end::configuration[]

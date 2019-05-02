@@ -1,3 +1,4 @@
+
 == Helidon Distributed Tracing Support
 
 Helidon libraries supports `*distributed Tracing*`.
@@ -41,6 +42,7 @@ include::../../chapter5/a-service/src/main/java/com/cemnura/server/ServerApplica
 ----
 <1> Configure the server
 <2> Configure the tracer
+<3> Build Tracer and register to Zipkin
 
 The server configuration will load based on our `*application.yaml*` file
 
