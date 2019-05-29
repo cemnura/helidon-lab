@@ -44,7 +44,6 @@ public class StatisticService implements Service {
                 .get("/average", this::getAverage)
                 .get("/max", this::getMax)
                 .get("/min", this::getMin)
-                .any(this::decProgressGauge)
                 ;
 
     }
@@ -60,7 +59,7 @@ public class StatisticService implements Service {
         req.next();
     }
 
-    private void decProgressGauge(ServerRequest req, ServerResponse res)
+    private void decProgressGauge()
     {
         INPROGRESS_GAUGE.dec();
     }
@@ -86,6 +85,7 @@ public class StatisticService implements Service {
         records.add(value);
 
         res.send("Recorded : "  + value);
+        decProgressGauge();
     }
 
     private void getAverage(ServerRequest req, ServerResponse res)
@@ -95,17 +95,19 @@ public class StatisticService implements Service {
                 .average();
 
         res.send(avg.toString());
+        decProgressGauge();
     }
 
     private void getMax(ServerRequest req, ServerResponse res)
     {
         res.send(records.stream().mapToDouble(BigDecimal::doubleValue).max().toString());
+        decProgressGauge();
     }
 
     private void getMin(ServerRequest req, ServerResponse res)
     {
         res.send(records.stream().mapToDouble(BigDecimal::doubleValue).min().toString());
-        req.next();
+        decProgressGauge();
     }
 
 }
